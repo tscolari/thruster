@@ -8,21 +8,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func New(config Config) *Server {
+func NewServer(config Config) *Server {
 	return &Server{
 		config: config,
-		router: gin.Default(),
+		engine: gin.Default(),
+	}
+}
+
+func NewServerWithEngine(config Config, engine *gin.Engine) *Server {
+	return &Server{
+		config: config,
+		engine: engine,
 	}
 }
 
 type Server struct {
 	config      Config
-	router      *gin.Engine
+	engine      *gin.Engine
 	routerGroup *gin.RouterGroup
-}
-
-func (s *Server) Router() *gin.Engine {
-	return s.router
 }
 
 const (
@@ -54,7 +57,7 @@ func (s *Server) group() *gin.RouterGroup {
 	}
 
 	if len(s.config.HTTPAuth) == 0 {
-		s.routerGroup = s.router.Group("/")
+		s.routerGroup = s.engine.Group("/")
 		return s.routerGroup
 	}
 
@@ -63,7 +66,7 @@ func (s *Server) group() *gin.RouterGroup {
 		accounts[account.Username] = account.Password
 	}
 
-	s.routerGroup = s.router.Group("/", gin.BasicAuth(accounts))
+	s.routerGroup = s.engine.Group("/", gin.BasicAuth(accounts))
 	return s.routerGroup
 }
 
@@ -72,9 +75,9 @@ func (s *Server) Run() error {
 
 	var err error
 	if s.config.TLS {
-		err = http.ListenAndServeTLS(address, s.config.Certificate, s.config.PublicKey, s.router)
+		err = http.ListenAndServeTLS(address, s.config.Certificate, s.config.PublicKey, s.engine)
 	} else {
-		err = http.ListenAndServe(address, s.router)
+		err = http.ListenAndServe(address, s.engine)
 	}
 
 	return err

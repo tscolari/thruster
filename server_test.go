@@ -33,8 +33,9 @@ var _ = Describe("Server", func() {
 		var testServer *httptest.Server
 
 		BeforeEach(func() {
-			subject = thruster.New(thruster.Config{})
-			testServer = httptest.NewUnstartedServer(subject.Router())
+			engine := gin.Default()
+			subject = thruster.NewServerWithEngine(thruster.Config{}, engine)
+			testServer = httptest.NewUnstartedServer(engine)
 		})
 
 		AfterEach(func() {
@@ -80,7 +81,7 @@ var _ = Describe("Server", func() {
 		JustBeforeEach(func() {
 			port = rand.Intn(8000) + 3000
 			config.Port = port
-			subject = thruster.New(config)
+			subject = thruster.NewServer(config)
 			subject.AddHandler(thruster.GET, "/test", handleFunc)
 		})
 
