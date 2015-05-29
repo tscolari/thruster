@@ -1,6 +1,7 @@
 package thruster
 
 import (
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -34,6 +35,28 @@ const (
 	PUT    string = "PUT"
 	DELETE string = "DELETE"
 )
+
+func (s *Server) Run() error {
+	address := s.config.Hostname + ":" + strconv.Itoa(s.config.Port)
+
+	var err error
+	if s.config.TLS {
+		certificate, err := s.certificate()
+		if err != nil {
+			return err
+		}
+		publicKey, err := s.publicKey()
+		if err != nil {
+			return err
+		}
+
+		err = http.ListenAndServeTLS(address, certificate, publicKey, s.engine)
+	} else {
+		err = http.ListenAndServe(address, s.engine)
+	}
+
+	return err
+}
 
 func (s *Server) AddHandler(method, path string, handler func(*gin.Context)) {
 	method = strings.ToUpper(method)
@@ -70,15 +93,42 @@ func (s *Server) group() *gin.RouterGroup {
 	return s.routerGroup
 }
 
-func (s *Server) Run() error {
-	address := s.config.Hostname + ":" + strconv.Itoa(s.config.Port)
-
-	var err error
-	if s.config.TLS {
-		err = http.ListenAndServeTLS(address, s.config.Certificate, s.config.PublicKey, s.engine)
-	} else {
-		err = http.ListenAndServe(address, s.engine)
+func (s *Server) certificate() (string, error) {
+	if len(s.config.Certificate) < 500 {
+		return s.config.Certificate, nil
 	}
 
-	return err
+	certFile, err := ioutil.TempFile("", "cert")
+	if err != nil {
+		return "", err
+	}
+
+	_, err = certFile.Write([]byte(s.config.Certificate))
+	if err != nil {
+		return "", err
+	}
+
+	certFile.Close()
+
+	return certFile.Name(), nil
+}
+
+func (s *Server) publicKey() (string, error) {
+	if len(s.config.PublicKey) < 500 {
+		return s.config.PublicKey, nil
+	}
+
+	keyFile, err := ioutil.TempFile("", "key")
+	if err != nil {
+		return "", err
+	}
+
+	_, err = keyFile.Write([]byte(s.config.PublicKey))
+	if err != nil {
+		return "", err
+	}
+
+	keyFile.Close()
+
+	return keyFile.Name(), nil
 }
