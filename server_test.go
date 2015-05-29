@@ -134,8 +134,8 @@ var _ = Describe("Server", func() {
 
 			BeforeEach(func() {
 				config.TLS = true
-				config.PublicKey = "assets/server.key"
-				config.Certificate = "assets/server.crt"
+				config.PublicKey = "fixtures/server.key"
+				config.Certificate = "fixtures/server.crt"
 			})
 
 			It("listens only to https when in TLS mode", func() {
