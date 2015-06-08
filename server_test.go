@@ -55,11 +55,7 @@ var _ = Describe("Server", func() {
 					subject.AddHandler(requestType, "/path", handleFunc)
 					testServer.Start()
 
-					client := &http.Client{}
-					request, err := http.NewRequest(requestType, testServer.URL+"/path", nil)
-					resp, err := client.Do(request)
-
-					Expect(err).ToNot(HaveOccurred())
+					resp := makeSimpleRequest(requestType, testServer.URL+"/path")
 					Expect(resp.StatusCode).To(Equal(http.StatusOK))
 
 					body, err := ioutil.ReadAll(resp.Body)

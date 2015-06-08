@@ -58,7 +58,7 @@ func (s *Server) Run() error {
 	return err
 }
 
-func (s *Server) AddHandler(method, path string, handler func(*gin.Context)) {
+func (s *Server) AddHandler(method, path string, handler gin.HandlerFunc) {
 	method = strings.ToUpper(method)
 	switch method {
 	case GET:
@@ -69,8 +69,6 @@ func (s *Server) AddHandler(method, path string, handler func(*gin.Context)) {
 		s.group().PUT(path, handler)
 	case DELETE:
 		s.group().DELETE(path, handler)
-		//default:
-		//log.Error("Couldn't register route: '%s:%s'", method, path)
 	}
 }
 
