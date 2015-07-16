@@ -9,63 +9,41 @@ import (
 )
 
 type FakeController struct {
-	IndexStub        func(context *gin.Context) (interface{}, error)
+	IndexStub        func(context *gin.Context)
 	indexMutex       sync.RWMutex
 	indexArgsForCall []struct {
 		context *gin.Context
 	}
-	indexReturns struct {
-		result1 interface{}
-		result2 error
-	}
-	ShowStub        func(context *gin.Context) (interface{}, error)
+	ShowStub        func(context *gin.Context)
 	showMutex       sync.RWMutex
 	showArgsForCall []struct {
 		context *gin.Context
 	}
-	showReturns struct {
-		result1 interface{}
-		result2 error
-	}
-	CreateStub        func(context *gin.Context) (interface{}, error)
+	CreateStub        func(context *gin.Context)
 	createMutex       sync.RWMutex
 	createArgsForCall []struct {
 		context *gin.Context
 	}
-	createReturns struct {
-		result1 interface{}
-		result2 error
-	}
-	UpdateStub        func(context *gin.Context) (interface{}, error)
+	UpdateStub        func(context *gin.Context)
 	updateMutex       sync.RWMutex
 	updateArgsForCall []struct {
 		context *gin.Context
 	}
-	updateReturns struct {
-		result1 interface{}
-		result2 error
-	}
-	DestroyStub        func(context *gin.Context) (interface{}, error)
+	DestroyStub        func(context *gin.Context)
 	destroyMutex       sync.RWMutex
 	destroyArgsForCall []struct {
 		context *gin.Context
 	}
-	destroyReturns struct {
-		result1 interface{}
-		result2 error
-	}
 }
 
-func (fake *FakeController) Index(context *gin.Context) (interface{}, error) {
+func (fake *FakeController) Index(context *gin.Context) {
 	fake.indexMutex.Lock()
 	fake.indexArgsForCall = append(fake.indexArgsForCall, struct {
 		context *gin.Context
 	}{context})
 	fake.indexMutex.Unlock()
 	if fake.IndexStub != nil {
-		return fake.IndexStub(context)
-	} else {
-		return fake.indexReturns.result1, fake.indexReturns.result2
+		fake.IndexStub(context)
 	}
 }
 
@@ -81,24 +59,14 @@ func (fake *FakeController) IndexArgsForCall(i int) *gin.Context {
 	return fake.indexArgsForCall[i].context
 }
 
-func (fake *FakeController) IndexReturns(result1 interface{}, result2 error) {
-	fake.IndexStub = nil
-	fake.indexReturns = struct {
-		result1 interface{}
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeController) Show(context *gin.Context) (interface{}, error) {
+func (fake *FakeController) Show(context *gin.Context) {
 	fake.showMutex.Lock()
 	fake.showArgsForCall = append(fake.showArgsForCall, struct {
 		context *gin.Context
 	}{context})
 	fake.showMutex.Unlock()
 	if fake.ShowStub != nil {
-		return fake.ShowStub(context)
-	} else {
-		return fake.showReturns.result1, fake.showReturns.result2
+		fake.ShowStub(context)
 	}
 }
 
@@ -114,24 +82,14 @@ func (fake *FakeController) ShowArgsForCall(i int) *gin.Context {
 	return fake.showArgsForCall[i].context
 }
 
-func (fake *FakeController) ShowReturns(result1 interface{}, result2 error) {
-	fake.ShowStub = nil
-	fake.showReturns = struct {
-		result1 interface{}
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeController) Create(context *gin.Context) (interface{}, error) {
+func (fake *FakeController) Create(context *gin.Context) {
 	fake.createMutex.Lock()
 	fake.createArgsForCall = append(fake.createArgsForCall, struct {
 		context *gin.Context
 	}{context})
 	fake.createMutex.Unlock()
 	if fake.CreateStub != nil {
-		return fake.CreateStub(context)
-	} else {
-		return fake.createReturns.result1, fake.createReturns.result2
+		fake.CreateStub(context)
 	}
 }
 
@@ -147,24 +105,14 @@ func (fake *FakeController) CreateArgsForCall(i int) *gin.Context {
 	return fake.createArgsForCall[i].context
 }
 
-func (fake *FakeController) CreateReturns(result1 interface{}, result2 error) {
-	fake.CreateStub = nil
-	fake.createReturns = struct {
-		result1 interface{}
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeController) Update(context *gin.Context) (interface{}, error) {
+func (fake *FakeController) Update(context *gin.Context) {
 	fake.updateMutex.Lock()
 	fake.updateArgsForCall = append(fake.updateArgsForCall, struct {
 		context *gin.Context
 	}{context})
 	fake.updateMutex.Unlock()
 	if fake.UpdateStub != nil {
-		return fake.UpdateStub(context)
-	} else {
-		return fake.updateReturns.result1, fake.updateReturns.result2
+		fake.UpdateStub(context)
 	}
 }
 
@@ -180,24 +128,14 @@ func (fake *FakeController) UpdateArgsForCall(i int) *gin.Context {
 	return fake.updateArgsForCall[i].context
 }
 
-func (fake *FakeController) UpdateReturns(result1 interface{}, result2 error) {
-	fake.UpdateStub = nil
-	fake.updateReturns = struct {
-		result1 interface{}
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeController) Destroy(context *gin.Context) (interface{}, error) {
+func (fake *FakeController) Destroy(context *gin.Context) {
 	fake.destroyMutex.Lock()
 	fake.destroyArgsForCall = append(fake.destroyArgsForCall, struct {
 		context *gin.Context
 	}{context})
 	fake.destroyMutex.Unlock()
 	if fake.DestroyStub != nil {
-		return fake.DestroyStub(context)
-	} else {
-		return fake.destroyReturns.result1, fake.destroyReturns.result2
+		fake.DestroyStub(context)
 	}
 }
 
@@ -211,14 +149,6 @@ func (fake *FakeController) DestroyArgsForCall(i int) *gin.Context {
 	fake.destroyMutex.RLock()
 	defer fake.destroyMutex.RUnlock()
 	return fake.destroyArgsForCall[i].context
-}
-
-func (fake *FakeController) DestroyReturns(result1 interface{}, result2 error) {
-	fake.DestroyStub = nil
-	fake.destroyReturns = struct {
-		result1 interface{}
-		result2 error
-	}{result1, result2}
 }
 
 var _ thruster.Controller = new(FakeController)
