@@ -1,4 +1,4 @@
-# thruster
+# thruster [![Build Status](https://travis-ci.org/tscolari/thruster.svg?branch=master)](https://travis-ci.org/tscolari/thruster)
 Simple wrapper around gin.Engine, that reads configuration from a config file.
 
 ## Basic Usage

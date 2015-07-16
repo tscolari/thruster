@@ -64,12 +64,13 @@ var _ = Describe("Server", func() {
 	Describe("#AddJSONHandler", func() {
 		var jsonHandler thruster.JSONHandler
 
+		BeforeEach(func() {
+			jsonHandler = func(c *gin.Context) (interface{}, error) {
+				return map[string]string{"key": "value"}, nil
+			}
+		})
+
 		Context("GET", func() {
-			BeforeEach(func() {
-				jsonHandler = func(c *gin.Context) (interface{}, error) {
-					return map[string]string{"key": "value"}, nil
-				}
-			})
 
 			It("returns 200 on success", func() {
 				subject.AddJSONHandler(thruster.GET, "/path", jsonHandler)
