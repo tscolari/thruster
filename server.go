@@ -9,6 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type JSONHandler func(*gin.Context) (interface{}, error)
+
 func NewServer(config Config) *Server {
 	return &Server{
 		config: config,
@@ -70,6 +72,33 @@ func (s *Server) AddHandler(method, path string, handler gin.HandlerFunc) {
 	case DELETE:
 		s.group().DELETE(path, handler)
 	}
+}
+
+func (s *Server) AddJSONHandler(method, path string, handler JSONHandler) {
+	ginHandler := func(c *gin.Context) {
+		data, err := handler(c)
+		if err != nil {
+			c.JSON(s.statusError(err), map[string]string{"error": err.Error()})
+			return
+		}
+		c.JSON(s.statusOK(method), data)
+	}
+	s.AddHandler(method, path, ginHandler)
+}
+
+func (s *Server) statusError(err error) int {
+	if err == ErrNotFound {
+		return http.StatusNotFound
+	}
+
+	return http.StatusInternalServerError
+}
+
+func (s *Server) statusOK(method string) int {
+	if method == POST {
+		return http.StatusCreated
+	}
+	return http.StatusOK
 }
 
 func (s *Server) group() *gin.RouterGroup {

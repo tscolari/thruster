@@ -2,11 +2,13 @@ package thruster_test
 
 import (
 	"crypto/tls"
+	"errors"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
+	"strings"
 
 	"github.com/tscolari/thruster"
 
@@ -64,6 +66,97 @@ var _ = Describe("Server", func() {
 				})
 			})
 		}
+	})
+
+	Describe("#AddJSONHandler", func() {
+		var testServer *httptest.Server
+		var jsonHandler thruster.JSONHandler
+
+		BeforeEach(func() {
+			engine := gin.Default()
+			subject = thruster.NewServerWithEngine(thruster.Config{}, engine)
+			testServer = httptest.NewUnstartedServer(engine)
+		})
+
+		AfterEach(func() {
+			testServer.Close()
+		})
+
+		Context("GET", func() {
+			BeforeEach(func() {
+				jsonHandler = func(c *gin.Context) (interface{}, error) {
+					return map[string]string{"key": "value"}, nil
+				}
+			})
+
+			It("returns 200 on success", func() {
+				subject.AddJSONHandler(thruster.GET, "/path", jsonHandler)
+				testServer.Start()
+
+				resp := makeSimpleRequest(thruster.GET, testServer.URL+"/path")
+				Expect(resp.StatusCode).To(Equal(http.StatusOK))
+			})
+
+			It("responds with a JSON", func() {
+				subject.AddJSONHandler(thruster.GET, "/path", jsonHandler)
+				testServer.Start()
+
+				resp := makeSimpleRequest(thruster.GET, testServer.URL+"/path")
+				body, err := ioutil.ReadAll(resp.Body)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(strings.Trim(string(body), "\n")).To(Equal(`{"key":"value"}`))
+			})
+		})
+
+		Context("POST", func() {
+			It("returns 201 on success", func() {
+				subject.AddJSONHandler(thruster.POST, "/path", jsonHandler)
+				testServer.Start()
+
+				resp := makeSimpleRequest(thruster.POST, testServer.URL+"/path")
+				Expect(resp.StatusCode).To(Equal(http.StatusCreated))
+			})
+
+			It("responds with a JSON", func() {
+				subject.AddJSONHandler(thruster.POST, "/path", jsonHandler)
+				testServer.Start()
+
+				resp := makeSimpleRequest(thruster.POST, testServer.URL+"/path")
+				body, err := ioutil.ReadAll(resp.Body)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(strings.Trim(string(body), "\n")).To(Equal(`{"key":"value"}`))
+			})
+		})
+
+		Context("when the handler returns an error", func() {
+			Context("an unknown error", func() {
+				It("returns 500 on the registered route", func() {
+					jsonHandler = func(c *gin.Context) (interface{}, error) {
+						return nil, errors.New("failed")
+					}
+
+					subject.AddJSONHandler("GET", "/path", jsonHandler)
+					testServer.Start()
+
+					resp := makeSimpleRequest("GET", testServer.URL+"/path")
+					Expect(resp.StatusCode).To(Equal(http.StatusInternalServerError))
+				})
+			})
+
+			Context("not found error", func() {
+				It("returns 404 on the registered route", func() {
+					jsonHandler = func(c *gin.Context) (interface{}, error) {
+						return nil, thruster.ErrNotFound
+					}
+
+					subject.AddJSONHandler("GET", "/path", jsonHandler)
+					testServer.Start()
+
+					resp := makeSimpleRequest("GET", testServer.URL+"/path")
+					Expect(resp.StatusCode).To(Equal(http.StatusNotFound))
+				})
+			})
+		})
 	})
 
 	Context("Server configuration", func() {
