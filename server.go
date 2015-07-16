@@ -86,6 +86,22 @@ func (s *Server) AddJSONHandler(method, path string, handler JSONHandler) {
 	s.AddHandler(method, path, ginHandler)
 }
 
+func (s *Server) AddJSONResource(path string, controller JSONController) {
+	s.AddJSONHandler(GET, path, controller.Index)
+	s.AddJSONHandler(GET, path+"/:id", controller.Show)
+	s.AddJSONHandler(POST, path, controller.Create)
+	s.AddJSONHandler(PUT, path+"/:id", controller.Update)
+	s.AddJSONHandler(DELETE, path+"/:id", controller.Destroy)
+}
+
+func (s *Server) AddResource(path string, controller Controller) {
+	s.AddHandler(GET, path, controller.Index)
+	s.AddHandler(GET, path+"/:id", controller.Show)
+	s.AddHandler(POST, path, controller.Create)
+	s.AddHandler(PUT, path+"/:id", controller.Update)
+	s.AddHandler(DELETE, path+"/:id", controller.Destroy)
+}
+
 func (s *Server) statusError(err error) int {
 	if err == ErrNotFound {
 		return http.StatusNotFound

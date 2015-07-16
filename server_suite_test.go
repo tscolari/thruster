@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/tscolari/thruster"
 
 	"testing"
 )
@@ -24,4 +25,11 @@ func makeSimpleRequest(method, url string) *http.Response {
 	Expect(err).ToNot(HaveOccurred())
 
 	return resp
+}
+
+func startServer(server *thruster.Server) {
+	go func() {
+		err := server.Run()
+		Expect(err).ToNot(HaveOccurred())
+	}()
 }

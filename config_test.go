@@ -24,4 +24,12 @@ var _ = Describe("Config", func() {
 		})
 	})
 
+	Describe("NewHTTPAuth", func() {
+		It("returns a correct HTTPAuth object", func() {
+			httpAuth := thruster.NewHTTPAuth("user", "passwd")
+			Expect(httpAuth.Username).To(Equal("user"))
+			Expect(httpAuth.Password).To(Equal("passwd"))
+		})
+	})
+
 })

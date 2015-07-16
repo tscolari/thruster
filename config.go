@@ -21,6 +21,13 @@ type HTTPAuth struct {
 	Password string `yaml:"password"`
 }
 
+func NewHTTPAuth(username, password string) HTTPAuth {
+	return HTTPAuth{
+		Username: username,
+		Password: password,
+	}
+}
+
 func NewConfig(path string) (Config, error) {
 	config := Config{}
 	data, err := ioutil.ReadFile(path)
